@@ -6,6 +6,7 @@ import com.yuchu.springbootsecurityapitest.pojo.Permission;
 import com.yuchu.springbootsecurityapitest.pojo.SysRole;
 import com.yuchu.springbootsecurityapitest.pojo.SysUser;
 import com.yuchu.springbootsecurityapitest.service.IUserService;
+import com.yuchu.springbootsecurityapitest.service.MyGrantedAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,7 +45,8 @@ public class UserServiceImpl implements IUserService{
         List<GrantedAuthority> grantedAuthorities = new ArrayList <>();
         for (Permission permission : permissions) {
             if (permission != null && permission.getName()!=null) {
-                GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permission.getName());
+                //GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permission.getName());
+                GrantedAuthority grantedAuthority = new MyGrantedAuthority(permission.getUrl(),permission.getMethod());
                 grantedAuthorities.add(grantedAuthority);
             }
         }

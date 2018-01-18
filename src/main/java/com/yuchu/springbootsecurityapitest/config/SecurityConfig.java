@@ -1,6 +1,7 @@
 package com.yuchu.springbootsecurityapitest.config;
 
 import com.yuchu.springbootsecurityapitest.service.IUserService;
+import com.yuchu.springbootsecurityapitest.service.MyFilterSecurityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,8 +23,8 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private IUserService userService;
-//    @Autowired
-//    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
+    @Autowired
+    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -43,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout().permitAll(); //注销行为任意访问
 //        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
-
+        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class)
+                .csrf().disable();//禁用csrf
     }
 }

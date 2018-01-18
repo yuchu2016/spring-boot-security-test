@@ -3,8 +3,7 @@ package com.yuchu.springbootsecurityapitest.controller;
 import com.yuchu.springbootsecurityapitest.common.Msg;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,5 +25,30 @@ public class HomeController {
     @ResponseBody
     public String hello(){
         return "hello admin";
+    }
+
+    @RequestMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    @GetMapping("/user")
+    @ResponseBody
+    public String getList(){
+        return "hello getList";
+    }
+
+
+    @PostMapping("/user")
+    @ResponseBody
+    public String save(){
+        return "hello save";
+    }
+
+
+    @PutMapping("/user")
+    @ResponseBody
+    public String update(){
+        return "hello update";
     }
 }
