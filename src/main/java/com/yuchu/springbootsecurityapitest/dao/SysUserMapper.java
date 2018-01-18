@@ -7,4 +7,6 @@ import java.util.List;
 @Mapper
 public interface SysUserMapper {
     SysUser findByUserName(String username);
+
+    void insertUser(SysUser sysUser);
 }

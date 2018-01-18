@@ -1,13 +1,19 @@
 package com.yuchu.springbootsecurityapitest.config;
 
 import com.yuchu.springbootsecurityapitest.service.IUserService;
+import com.yuchu.springbootsecurityapitest.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 /**
@@ -19,30 +25,48 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)// 控制权限注解
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private IUserService userService;
-//    @Autowired
-//    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService); //user Details Service验证
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        auth.userDetailsService(userService).passwordEncoder(new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence charSequence) {
+
+                return encoder.encode(MD5Util.encode((String) charSequence));
+            }
+
+            @Override
+            public boolean matches(CharSequence charSequence, String s) {
+                return encoder.matches(MD5Util.encode((String) charSequence),s);
+            }
+        });
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest().authenticated() //任何请求,登录后可以访问
+      http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/users/**")
+                .authenticated()
+                .antMatchers(HttpMethod.POST)
+                .authenticated()
+                .antMatchers(HttpMethod.PUT)
+                .authenticated()
+                .antMatchers(HttpMethod.DELETE)
+                .authenticated()
+                .antMatchers("/**")
+                .permitAll()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                .failureUrl("/login?error")
-                .defaultSuccessUrl("/")
-                .permitAll() //登录页面用户任意访问
+                .sessionManagement()
                 .and()
-                .logout().permitAll(); //注销行为任意访问
-//        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
+                .httpBasic();
+
+        ;
 
     }
 }

@@ -19,6 +19,9 @@
       <result column="name" property="name"/>
     </collection>
   </resultMap>
+  <insert id="insertUser" parameterType="com.yuchu.springbootsecurityapitest.pojo.SysUser">
+    INSERT INTO SYS_user(username,password) VALUES (#{username},#{password})
+  </insert>
   <select id="findByUserName" resultMap="userMap" parameterType="string">
     SELECT u.*,sr.name
     FROM SYS_user u
